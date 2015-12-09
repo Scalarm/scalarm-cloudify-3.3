@@ -1,0 +1,189 @@
+tosca_definitions_version: cloudify_dsl_1_2
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.3/types.yaml
+
+node_templates:
+  host:
+    type: cloudify.nodes.Compute
+    properties:
+      ip: localhost
+      install_agent: false
+
+  information_service:
+    type: cloudify.nodes.WebServer
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: host
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [information_service, install]
+        configure:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [information_service, configure]
+        start:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [information_service, start]
+        stop:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [information_service, stop]
+        delete:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [information_service, delete]
+
+  storage_manager:
+    type: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [storage_manager, install]
+        configure:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [storage_manager, configure]
+        start:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [storage_manager, start]
+        stop:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [storage_manager, stop]
+        delete:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [storage_manager, delete]
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: host
+      - type: cloudify.relationships.connected_to
+        target: information_service
+
+  experiment_manager:
+    type: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [experiment_manager, install]
+        configure:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [experiment_manager, configure]
+        start:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [experiment_manager, start]
+        stop:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [experiment_manager, stop]
+        delete:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [experiment_manager, delete]
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: host
+      - type: cloudify.relationships.connected_to
+        target: information_service
+      - type: cloudify.relationships.connected_to
+        target: storage_manager
+
+  data_explorer:
+    type: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [data_explorer, install]
+        configure:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [data_explorer, configure]
+        start:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [data_explorer, start]
+        stop:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [data_explorer, stop]
+        delete:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [data_explorer, delete]
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: host
+      - type: cloudify.relationships.connected_to
+        target: information_service
+      - type: cloudify.relationships.connected_to
+        target: storage_manager
+
+  pathfinder:
+    type: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [pathfinder, install]
+        configure:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [pathfinder, configure]
+        start:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [pathfinder, start]
+        stop:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [pathfinder, stop]
+        delete:
+          implementation: deploy.sh
+          inputs:
+            process:
+              args: [pathfinder, delete]
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: host
+      - type: cloudify.relationships.connected_to
+        target: information_service
+      - type: cloudify.relationships.connected_to
+        target: storage_manager
